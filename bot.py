@@ -33,19 +33,36 @@ class Bot:
         password = driver.find_element_by_name('password')#Defines the password input field
         password.send_keys(self.password)#Enters the password
         password.submit()#Submits the password field in order to finish the login process
-        notNowButton = WebDriverWait(driver, 15).until(lambda d: d.find_element_by_xpath('//button[text()="Not Now"]'))
+        notNowButton = WebDriverWait(driver, 15).until(lambda a: a.find_element_by_xpath('//button[text()="Not Now"]'))
         notNowButton.click()
         self.action(driver)
 
         
 
     def action(self,driver):
-        search = driver.find_element(By.XPATH, '//input[@placeholder="Search"]')
-        search.send_keys("#posthardcore")
-        time.sleep(1)
-        search.send_keys(Keys.ENTER)
-        time.sleep(1)
-        search.send_keys(Keys.ENTER) 
+        # Creates a for loop that allows the bot to search for all the hashtags given to it
+        for hashtag in self.hashtags:
+            # Redirects from whatever page it was on to the homepage
+            driver.get('https://www.instagram.com/')
+            # Finds the search bar by looking for the XPath 
+            # Create an object search 
+            search = driver.find_element_by_xpath('//input[@placeholder="Search"]')
+            # React element so you must clear the text area
+            search.clear()
+            # Create a hashtag to search for from the user input
+            search_text = "#" + hashtag
+            # Type the desired hashtag into the search bar
+            search.send_keys(search_text)
+            # Creates the XPath string to find the correct button
+            hashtag_xpath = '//*[text()="{}"]'.format(search_text)
+            # Causes the driver to wait until the specified element is found
+            # In this case the element being waited for is the hashtag button
+            # Then we set the hashtag_button object to the button
+            hashtag_button = WebDriverWait(driver, 15).until(lambda a: a.find_element_by_xpath(hashtag_xpath))
+            # Then click the button to redirect to that page
+            hashtag_button.click()
+            time.sleep(5)
+
         done = input("Press enter when you are done")
         if(done == ""):
             driver.quit()
